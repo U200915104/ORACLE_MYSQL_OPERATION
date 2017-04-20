@@ -1,0 +1,44 @@
+﻿<Window x:Class="ComparisonExport.UpdateMySqlFromOracle"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="OracleToMySql" Height="450" Width="538">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Button Click="btnOK_Click" Content="确定" Height="23" HorizontalAlignment="Left" Margin="408,282,0,0" Name="btnOK" VerticalAlignment="Top" Width="75" />
+        <ProgressBar Height="10" HorizontalAlignment="Left" Margin="10,363,0,0" Name="pbExport" VerticalAlignment="Top" Width="473" />
+        <TextBlock HorizontalAlignment="Left" Margin="173,334,0,58" Name="tbProcess" Text="0/0" TextAlignment="Center" Width="143" />
+        <Rectangle Height="213" HorizontalAlignment="Left" Margin="277,10,0,0" Name="rectangle1" Stroke="Black" VerticalAlignment="Top" Width="213" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="289,48,0,0" Name="labAddr" Text="地址：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="331,48,0,0" Name="txtAddr" VerticalAlignment="Top" Width="146" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="289,85,0,0" Name="labPort" Text="端口：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="331,85,0,0" Name="txtPort" VerticalAlignment="Top" Width="146" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="289,121,0,0" Name="labUserName" Text="用户：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="331,121,0,0" Name="txtUserName" VerticalAlignment="Top" Width="146" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="289,156,0,0" Name="labPassword" Text="密码：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="331,156,0,0" Name="txtPassword" VerticalAlignment="Top" Width="146" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="359,19,0,0" Name="textBlock1" Text="MySql" VerticalAlignment="Top" />
+        <Rectangle Height="230" HorizontalAlignment="Left" Margin="30,4,0,0" Name="rectangle2" Stroke="Black" VerticalAlignment="Top" Width="213" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="40,40,0,0" Name="textBlock3" Text="地址：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="82,40,0,0" Name="txtAddrTo" VerticalAlignment="Top" Width="146" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="40,72,0,0" Name="textBlock4" Text="端口：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="82,72,0,0" Name="txtPortTo" VerticalAlignment="Top" Width="146" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="40,107,0,0" Name="textBlock5" Text="用户：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="82,107,0,0" Name="txtUserNameTo" VerticalAlignment="Top" Width="146" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="40,140,0,0" Name="textBlock6" Text="密码：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="82,140,0,0" Name="txtPasswordTo" VerticalAlignment="Top" Width="146" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="110,19,0,0" Name="textBlock7" Text="Oracle" VerticalAlignment="Top" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="40,171,0,0" Name="textBlock8" Text="服务：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="82,171,0,0" Name="txtOraService" VerticalAlignment="Top" Width="146" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="40,199,0,0" Name="textBlock18" Text="表名：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="82,199,0,0" Name="txtOraTable" VerticalAlignment="Top" Width="146" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="289,187,0,0" Name="textBlock2" Text="库名：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="331,187,0,0" Name="txtDBName" VerticalAlignment="Top" Width="146" />
+        <Button Click="btnBrower_Click" Content="浏览..." Height="23" HorizontalAlignment="Left" Margin="408,239,0,0" Name="btnBrower" VerticalAlignment="Top" Width="75" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="10,240,0,0" Name="txtFileName" VerticalAlignment="Top" Width="377" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="372,333,0,0" Name="txtError" Text="错误数：" VerticalAlignment="Top" Width="47" />
+        <TextBlock Foreground="Red" Height="23" HorizontalAlignment="Left" Margin="421,333,0,0" Name="txtErrorCount" Text="0" VerticalAlignment="Top" Width="47" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="11,282,0,0" Name="textBlock9" Text="线程数量：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="78,282,0,0" Name="txtThreadCount" Text="10" VerticalAlignment="Top" Width="81" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="202,279,0,0" Name="textBlock10" Text="查询条数：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="269,279,0,0" Name="txtQueryCount" Text="2000" VerticalAlignment="Top" Width="81" />
+    </Grid>
+</Window>

@@ -1,0 +1,39 @@
+﻿<Window x:Class="ComparisonExport.OracleToMySql1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Oracle数据同步" Height="450" Width="538">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Button Click="btnOK_Click" Content="确定" Height="23" HorizontalAlignment="Left" Margin="429,376,0,0" Name="btnOK" VerticalAlignment="Top" Width="75" />
+        <ProgressBar Height="10" HorizontalAlignment="Left" Margin="49,389,0,0" Name="pbExport" VerticalAlignment="Top" Width="338" />
+        <TextBlock HorizontalAlignment="Left" Margin="147,369,0,23" Name="tbProcess" Text="0/0" TextAlignment="Center" Width="143" />
+        <Rectangle Height="93" HorizontalAlignment="Left" Margin="12,7,0,0" Name="rectangle2" Stroke="Black" VerticalAlignment="Top" Width="492" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="27,16,0,0" Name="textBlock3" Text="地址：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="69,16,0,0" Name="txtAddrTo" VerticalAlignment="Top" Width="99" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="27,42,0,0" Name="textBlock4" Text="端口：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="69,42,0,0" Name="txtPortTo" VerticalAlignment="Top" Width="99" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="187,16,0,0" Name="textBlock5" Text="用户：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="229,16,0,0" Name="txtUserNameTo" VerticalAlignment="Top" Width="90" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="350,16,0,0" Name="textBlock6" Text="密码：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="392,16,0,0" Name="txtPasswordTo" VerticalAlignment="Top" Width="99" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="187,42,0,0" Name="textBlock8" Text="服务：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="229,42,0,0" Name="txtOraService" VerticalAlignment="Top" Width="90" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="310,369,0,0" Name="txtError" Text="错误数：" VerticalAlignment="Top" Width="47" />
+        <TextBlock Foreground="Red" Height="23" HorizontalAlignment="Left" Margin="363,369,0,0" Name="txtErrorCount" Text="0" VerticalAlignment="Top" Width="47" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="27,71,0,0" Name="textBlock1" Text="要同步的表：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="105,71,0,0" Name="txtOraTables" VerticalAlignment="Top" Width="386" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="327,42,0,0" Name="textBlock2" Text="同步时间：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="392,42,0,0" Name="txtOraDate" VerticalAlignment="Top" Width="99" />
+        <Rectangle Height="57" HorizontalAlignment="Left" Margin="12,102,0,0" Name="rectangle1" Stroke="Black" VerticalAlignment="Top" Width="492" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="27,106,0,0" Name="textBlock7" Text="接口地址：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="105,106,0,0" Name="txtZJMBurl" VerticalAlignment="Top" Width="386" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="27,132,0,0" Name="textBlock11" Text="日志目录：" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="105,132,0,0" Name="txtFileDirecory" VerticalAlignment="Top" Width="386" />
+        
+        <ScrollViewer Height="198" Width="492" HorizontalAlignment="Left" Margin="12,164,0,0" VerticalScrollBarVisibility="Auto" BorderBrush="Black" VerticalContentAlignment="Top" VerticalAlignment="Top" AllowDrop="False">
+            <ScrollViewer.Content>
+                <TextBlock HorizontalAlignment="Left" Name="tbkConsole" Text="" VerticalAlignment="Top"  TextWrapping="Wrap" Margin="3,0" />
+            </ScrollViewer.Content>
+        </ScrollViewer>
+        <Rectangle Height="198" HorizontalAlignment="Left" Margin="12,164,0,0" Name="rectangle3" Stroke="Black" VerticalAlignment="Top" Width="492" />
+    </Grid>
+</Window>
