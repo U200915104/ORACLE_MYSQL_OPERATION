@@ -33,27 +33,33 @@ namespace ComparisonExport
         private List<Thread> mThread;
         private int mThreadCount = 1;
         private int mQueryCount = 2000;
+        private int mTotalTables = 0;
+        private int mFinshTables = 0;
         public OracleToMySql1()
         {
             InitializeComponent();
 
-            txtAddrTo.Text = "10.24.107.163";
+            txtAddrTo.Text = "10.10.181.138";
+            //txtAddrTo.Text = "10.24.107.163";
             txtPortTo.Text = "1521";
-            txtUserNameTo.Text = "rksj";
-            txtPasswordTo.Text = "rksj";
-            txtOraService.Text = "orcl";
+            //txtUserNameTo.Text = "rksj";
+            //txtPasswordTo.Text = "rksj";
+            //txtOraService.Text = "orcl";
+            txtUserNameTo.Text = "viot";
+            txtPasswordTo.Text = "viot";
+            txtOraService.Text = "viot";
             txtOraTables.Text = "HB_RK_ZPXX,HB_RK_2,HB_RK_3,HB_RK_4,HB_RK_5,HB_RK_6,HB_RK_7,HB_RK_8";
-            txtOraDate.Text = "2017-03-21 00:00:00";
-            txtFileDirecory.Text = "d:/logfile/";
-            txtZJMBurl.Text = "http://10.24.107.153:8080/PostHandler.do";
+            txtOraDate.Text = "2017-03-21";
+            txtFileDirecory.Text = "d:/1/";
+            // txtZJMBurl.Text = "http://10.24.107.153:8080/BatchAddFaceInfo";
+            txtZJMBurl.Text = "http://10.10.181.138:8080/FaceComparison_hebei/BatchAddFaceInfo";
+
             tbkConsole.Text = "";
 
             aTimer = new MyTimer();
             aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            aTimer.Interval = 1000;
-            aTimer.Enabled = true;
-            aTimer.Stop();
-
+            aTimer.Interval = 10000;
+            aTimer.Enabled = false;
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
@@ -68,7 +74,7 @@ namespace ComparisonExport
                 btnOK.IsEnabled = true;
                 return;
             }
-            
+
             string strOraConn = string.Format("Provider=OraOLEDB.Oracle.1;User ID={0};Password={1};Data Source=(DESCRIPTION = (ADDRESS_LIST= (ADDRESS = (PROTOCOL = TCP)(HOST = {2})(PORT = {3}))) (CONNECT_DATA = (SERVICE_NAME = {4})))", txtUserNameTo.Text.Trim(),
                 txtPasswordTo.Text.Trim(), txtAddrTo.Text.Trim(), txtPortTo.Text.Trim(), txtOraService.Text.Trim());
             aTimer.strOraConn = strOraConn;
@@ -106,7 +112,7 @@ namespace ComparisonExport
                 Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]连接ORACLE数据库成功!\r\n"; }));
             }
             Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]正在测试web服务器连接，请稍后...\r\n"; }));
-            String ret = SendHttp(strZJMBurl, "geto2n", 0, null, null, null, null, null, null, null, null);
+            String ret = SendHttp(strZJMBurl, "testConnect", 0, null, null, null, null, null, null, null, null);
             if (ret != "connect")
             {
                 //Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][error]与web服务器通信异常!\r\n"; }));
@@ -118,30 +124,34 @@ namespace ComparisonExport
                 Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]连接web服务成功!\r\n"; }));
             }
 
-            aTimer.Start();
-        
+            aTimer.Enabled = true;
+            //aTimer.Start();
         }
 
         private void OnTimedEvent(object sender, EventArgs e)
         {
+            aTimer.Stop();
             if (lastDateTime.DayOfYear != DateTime.Now.DayOfYear)
             {
                 Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]开始同步数据!\r\n"; }));
-                SynchronizeOraTable(aTimer.txtOraTables.ToString(), 1, aTimer.txtZJMBurl.ToString(), aTimer.strOraConn.ToString(), aTimer.txtFileDirecory.ToString(), aTimer.txtOraDate.ToString());    
-                aTimer.Stop();
-                
-            }          
-            
+                SynchronizeOraTable(aTimer.txtOraTables.ToString(), 1, aTimer.txtZJMBurl.ToString(), aTimer.strOraConn.ToString(), aTimer.txtFileDirecory.ToString(), aTimer.txtOraDate.ToString());
+
+
+            }
+
         }
 
         private void SynchronizeOraTable(string OraTables, int ThreadCount, string ZJMBurl, string OraConn, string FileDirecory, string OraDate)
         {
-            string strFile = System.IO.Path.Combine("FileDirecory", DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss") + ".txt");
+            string strFile = System.IO.Path.Combine(FileDirecory, DateTime.Now.ToString("yyyy-MM-dd") + ".txt");
             int iLen = mQueryCount;
             DBHelper dbHelper = DBHelper.GetInstance("Oracle", OraConn, false);
-            //int iCount = dbHelper.GetCount(Table, "");
             int iCurIndex = 1;
+            int SynCount = 0;
+            Boolean isLastGroup = false;
             string[] arrTables = OraTables.Split(',');
+            mTotalTables = arrTables.Length;
+            mFinshTables = 0;
             foreach (string table in arrTables)
             {
                 Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]开始同步表" + table + "...\r\n"; }));
@@ -149,56 +159,77 @@ namespace ComparisonExport
                 {
                     File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][info]开始同步表" + table + "...\r\n"));
                 }
+                try
+                {
+                    SynCount = dbHelper.GetCount(table, "tbsj>to_date('" + OraDate + "','yyyy-mm-dd') order by tbsj desc ");
+                }
+                catch (System.Exception ex)
+                {
+                    Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][error]读取表" + table + "失败！\r\n"; }));
+                    lock (mLock)
+                    {
+                        File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][error]读取表" + table + "失败！\r\n"));
+                        mFinshTables++;
+                    }
+                    
+                    continue;
+                }
                 DataTable dtInfos = new DataTable();
                 while (true)
                 {
                     try
                     {
-                        dtInfos = dbHelper.GetDataTable("rno,xm,xb,gmsfhm,zpxlh,csrq,ssxq,xp,tbsj", table, "", "", "", iCurIndex, iLen);
-
+                        dtInfos = dbHelper.GetDataTable("rno,xm,xb,gmsfhm,zpxlh,csrq,ssxq,xp,tbsj", table, "tbsj>to_date('" + OraDate + "','yyyy-mm-dd')", "tbsj desc", "", iCurIndex, iLen);
                     }
                     catch (System.Exception ex)
                     {
-                        MessageBox.Show("ExportThread" + ex.ToString());
+                        //MessageBox.Show("ExportThread" + ex.ToString());
                         Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][error]读取表" + table + "失败！\r\n"; }));
                         lock (mLock)
                         {
                             File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][error]读取表" + table + "失败！\r\n"));
-                        }
+                            mFinshTables++;
+                        }                      
+                        break;
                     }
-                    
+
                     if (dtInfos == null)
                     {
                         break;
                     }
                     iCurIndex = iCurIndex + dtInfos.Rows.Count;
-                    Thread thExportTable = null;
-                        if (mThread.Count < mThreadCount)
-                        {
-                            Thread thExport = new Thread(new ParameterizedThreadStart(ExportThread));
-                            mThread.Add(thExport);
-                            thExportTable = thExport;
-                        }
-                        else
-                        {
-
-                            while (true)
-                            {
-                                thExportTable = GetThread();
-                                if (thExportTable != null)
-                                {
-                                    break;
-                                }
-
-                                Thread.Sleep(5000);
-                            }
-                        }
-                        thExportTable.Start(new object[] { table, OraConn, strFile, dtInfos, ZJMBurl });
-
+                    if (iCurIndex >= SynCount)
+                    {
+                        isLastGroup = true;
                     }
+                    Thread thExportTable = null;
+                    if (mThread.Count < mThreadCount)
+                    {
+                        Thread thExport = new Thread(new ParameterizedThreadStart(ExportThread));
+                        mThread.Add(thExport);
+                        thExportTable = thExport;
+                    }
+                    else
+                    {
+
+                        while (true)
+                        {
+                            thExportTable = GetThread();
+                            if (thExportTable != null)
+                            {
+                                break;
+                            }
+
+                            Thread.Sleep(5000);
+                        }
+                    }
+                    thExportTable.Start(new object[] { table, OraConn, strFile, dtInfos, ZJMBurl, isLastGroup });
+
                 }
-            
+                continue;
             }
+
+        }
 
         private Thread GetThread()
         {
@@ -221,7 +252,7 @@ namespace ComparisonExport
 
             return null;
         }
-        
+
         private void ExportThread(object Arg)
         {
 
@@ -231,8 +262,9 @@ namespace ComparisonExport
             string strFile = (string)arrArg[2];
             DataTable dtInfos = (DataTable)arrArg[3];
             string strZJMBurl = (string)arrArg[4];
+            Boolean isLastGroup = (Boolean)arrArg[5];
             int dbid = 0;
-       
+
             if (strTable == "HB_RK_ZPXX") dbid = 1;
             else if (strTable == "HB_RK_2") dbid = 2;
             else if (strTable == "HB_RK_3") dbid = 3;
@@ -247,14 +279,14 @@ namespace ComparisonExport
             {
                 try
                 {
-                    strRet = SendHttp(strZJMBurl, "addFaceInfo", dbid, drInfo["RNO"].ToString(), drInfo["XM"].ToString(), drInfo["XB"].ToString(), drInfo["GMSFHM"].ToString(), drInfo["ZPXLH"].ToString(), drInfo["CSRQ"].ToString(), drInfo["SSRQ"].ToString(), (byte[])drInfo["XP"]);
+                    strRet = SendHttp(strZJMBurl, "addFaceInfo", dbid, drInfo["RNO"].ToString(), drInfo["XM"].ToString(), drInfo["XB"].ToString(), drInfo["GMSFHM"].ToString(), drInfo["ZPXLH"].ToString(), drInfo["CSRQ"].ToString(), drInfo["SSXQ"].ToString(), (byte[])drInfo["XP"]);
                 }
                 catch (System.Exception ex)
                 {
                     MessageBox.Show(ex.ToString());
                     return;
                 }
-                
+
                 if (strRet != "0")
                 {
                     lock (mLock)
@@ -272,6 +304,23 @@ namespace ComparisonExport
             }
             dtInfos.Dispose();
             dtInfos = null;
+            if (isLastGroup)
+            {
+                Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]表" + strTable + "同步完成!\r\n"; }));
+                lock (mLock)
+                {
+                    mFinshTables++;
+                    if (mFinshTables == mTotalTables)
+                    {
+                        Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!详情请查看日志！\r\n"; }));
+                        File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!\r\n"));
+                        aTimer.Start();
+                        //Dispatcher.Invoke(new Action(delegate { btnOK.IsEnabled = true; }));
+                    }
+                }
+            }
+            
+
         }
 
         private String SendHttp(String url, String action, int dbid, String rno, String xm, String xb, String gmsfhm, String zpxlh, String csrq, String ssxq, byte[] xp)
@@ -339,9 +388,6 @@ namespace ComparisonExport
         }
     }
 
-
-
-
     public class MyTimer : System.Timers.Timer
     {
         public object strOraConn { get; set; }
@@ -349,6 +395,6 @@ namespace ComparisonExport
         public object txtOraTables { get; set; }
         public object txtFileDirecory { get; set; }
         public object txtZJMBurl { get; set; }
-        
-    }  
+
+    }
 }
