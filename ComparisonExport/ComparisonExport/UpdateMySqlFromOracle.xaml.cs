@@ -39,6 +39,7 @@ namespace ComparisonExport
             txtUserName.Text = "root";
             txtPassword.Text = "root";
             txtDBName.Text = "faceserverdb";
+            txtTable.Text = "";
 
             txtAddrTo.Text = "10.24.107.163";
             txtPortTo.Text = "1521";
@@ -47,7 +48,7 @@ namespace ComparisonExport
             txtOraService.Text = "orcl";
             txtOraTable.Text = "";
             txtFileName.Text = "d:\\logfile.txt";
-}
+        }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
@@ -70,7 +71,7 @@ namespace ComparisonExport
                 mQueryCount = Convert.ToInt32(txtQueryCount.Text.Trim());
                 // return;
                 Thread thExport = new Thread(new ParameterizedThreadStart(Export));
-                thExport.Start(new string[] { strMySqlConn, strOraConn, txtUserNameTo.Text.Trim(), txtFileName.Text.Trim(), txtThreadCount.Text.Trim(), txtOraTable.Text.Trim() });
+                thExport.Start(new string[] { strMySqlConn, strOraConn, txtUserNameTo.Text.Trim(), txtFileName.Text.Trim(), txtThreadCount.Text.Trim(), txtOraTable.Text.Trim(), txtTable.Text.Trim() });
 
             }
             catch (Exception ex)
@@ -88,25 +89,33 @@ namespace ComparisonExport
             string strLogFile = arrArg[3];
             int iThreadCount = Convert.ToInt32(arrArg[4]);
             string strOraTBName = arrArg[5];
+            string strTBNames = arrArg[6];
             int lCount = 0;
             File.Delete(strLogFile);
             DBHelper dbHelperMySql = null;
-            DataTable dtMysqlTbInfos = null;
+            //DataTable dtMysqlTbInfos = null;
             try
             {
                 dbHelperMySql = DBHelper.GetInstance("MySql", strMySqlConn, false);
-                dtMysqlTbInfos = dbHelperMySql.GetDataTable("select id,name from tableinfo");
-                if (dtMysqlTbInfos == null)
+
+
+                //dtMysqlTbInfos = dbHelperMySql.GetDataTable("select id,name from tableinfo");
+                if (strTBNames.Length == 0)
                 {
                     MessageBox.Show("找不到mysql表！");
                     return;
                 }
-                foreach (DataRow drInfo in dtMysqlTbInfos.Rows)
+                string[] arrTables = strTBNames.Split(',');
+                foreach (string table in arrTables)
                 {
-                    lCount += dbHelperMySql.GetCount(drInfo["name"].ToString(), "");
+                    lCount += dbHelperMySql.GetCount(table.ToString(), "");
                 }
+                //foreach (DataRow drInfo in dtMysqlTbInfos.Rows)
+                //{
+                //    lCount += dbHelperMySql.GetCount(drInfo["name"].ToString(), "");
+                //}
                 Dispatcher.Invoke(new Action(delegate { pbExport.Maximum = lCount; tbProcess.Text = string.Format("0/{0}", lCount); }));
-                ExportTable(dtMysqlTbInfos, iThreadCount, strMySqlConn, strOraConn, strLogFile, lCount, strOraTBName);
+                ExportTable(arrTables, iThreadCount, strMySqlConn, strOraConn, strLogFile, lCount, strOraTBName);
             }
             catch (System.Exception ex)
             {
@@ -128,19 +137,19 @@ namespace ComparisonExport
             txtFileName.Text = sfd.FileName;
         }
 
-        private void ExportTable(DataTable dataTable, int ThreadCount, string MySqlConn, string OraConn, string LogFile, long Count, string strOraTBName)
+        private void ExportTable(String[] arrTables, int ThreadCount, string MySqlConn, string OraConn, string LogFile, long Count, string strOraTBName)
         {
             try
             {
                 int iLen = mQueryCount;
                 DBHelper dbHelperMySql = DBHelper.GetInstance("MySql", MySqlConn, false);
-                foreach (DataRow drInfo in dataTable.Rows)
+                foreach (string table in arrTables)
                 {
                     int iCurIndex = 1;
                     while (true)
                     {
                         DataTable dtInfos = new DataTable();
-                        dtInfos = dbHelperMySql.GetDataTable("id,rybh,zpbh,facetype", drInfo["name"].ToString(), "", "", "id", iCurIndex, iLen);
+                        dtInfos = dbHelperMySql.GetDataTable("id,rybh,zpbh,facetype", table, "", "", "id", iCurIndex, iLen);
                         if (dtInfos == null)
                         {
                             break;
@@ -168,7 +177,7 @@ namespace ComparisonExport
                                 Thread.Sleep(5000);
                             }
                         }
-                        thExportTable.Start(new object[] { drInfo["name"].ToString(), MySqlConn, OraConn, LogFile, dtInfos, Count, strOraTBName });
+                        thExportTable.Start(new object[] { table, MySqlConn, OraConn, LogFile, dtInfos, Count, strOraTBName });
                     }
                 }
             }
@@ -245,7 +254,7 @@ namespace ComparisonExport
                         }
                         continue;
                     }
-                    dt1 = DateTime.Now;
+                    //dt1 = DateTime.Now;
                     try
                     {
                         dtOra = dbHelper.GetDataTable("select RNO,ZPXLH,MZ from " + strOraTBName + " where ZPXLH=" + drInfo["zpbh"].ToString());
@@ -269,12 +278,12 @@ namespace ComparisonExport
                         }
                         continue;
                     }
-                   
-                    dt2 = DateTime.Now;
-                    // lock (mLock)
-                    // {
-                    //     File.AppendAllText(strFile, string.Format("读取ZPXLH为{0}的Oracle记录用时{1}秒\r\n", drInfo["zpbh"].ToString(), (dt2-dt1).TotalSeconds));
-                    // }
+
+                    //dt2 = DateTime.Now;
+                    //lock (mLock)
+                    //{
+                    //    File.AppendAllText(strFile, string.Format("读取ZPXLH为{0}的Oracle记录用时{1}秒\r\n", drInfo["zpbh"].ToString(), (dt2 - dt1).TotalSeconds));
+                    //}
                     if (dtOra == null)
                     {
                         lock (mLockPB)
@@ -291,8 +300,8 @@ namespace ComparisonExport
                             }));
                         }
                         continue;
-                    }   
-                    dt3 = DateTime.Now;
+                    }
+                    //dt3 = DateTime.Now;
                     try
                     {
                         bol = dbHelperMySql.Update(strTable, "zpbh='" + dtOra.Rows[0]["ZPXLH"] + "'", new string[] { "rybh", "facetype", "mz" }, new object[] { dtOra.Rows[0]["RNO"], 1, dtOra.Rows[0]["MZ"] });
@@ -316,11 +325,11 @@ namespace ComparisonExport
                         }
                         continue;
                     }
-                    dt4 = DateTime.Now;
-                    // lock (mLock)
-                   // {
-                   //     File.AppendAllText(strFile, string.Format("更新zpbh为{0}的MySql记录用时{1}秒\r\n", dtOra.Rows[0]["ZPXLH"].ToString(), (dt4-dt3).TotalSeconds));
-                   // }
+                    //dt4 = DateTime.Now;
+                    //lock (mLock)
+                    //{
+                    //    File.AppendAllText(strFile, string.Format("更新zpbh为{0}的MySql记录用时{1}秒\r\n", dtOra.Rows[0]["ZPXLH"].ToString(), (dt4 - dt3).TotalSeconds));
+                    //}
                     if (!bol)
                     {
                         lock (mLock)
@@ -329,19 +338,20 @@ namespace ComparisonExport
                             Dispatcher.Invoke(new Action(delegate { txtErrorCount.Text = (Convert.ToInt32(txtErrorCount.Text) + 1).ToString(); }));
                         }
                     }
-                }
-                lock (mLockPB)
-                {
-                    Dispatcher.Invoke(new Action(delegate
+
+                    lock (mLockPB)
                     {
-                        pbExport.Value = pbExport.Value + 1; tbProcess.Text = string.Format("{0}/{1}", pbExport.Value, lCount);
-                        if (pbExport.Value == lCount)
+                        Dispatcher.Invoke(new Action(delegate
                         {
-                            MessageBox.Show("导出完成！");
-                            isComplete = true;
-                            return;
-                        }
-                    }));
+                            pbExport.Value = pbExport.Value + 1; tbProcess.Text = string.Format("{0}/{1}", pbExport.Value, lCount);
+                            if (pbExport.Value == lCount)
+                            {
+                                MessageBox.Show("导出完成！");
+                                isComplete = true;
+                                return;
+                            }
+                        }));
+                    }
                 }
             }
             catch (System.Exception ex)
