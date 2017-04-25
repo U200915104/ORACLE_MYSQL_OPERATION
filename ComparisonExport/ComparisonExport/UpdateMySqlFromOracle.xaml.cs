@@ -257,7 +257,7 @@ namespace ComparisonExport
                     //dt1 = DateTime.Now;
                     try
                     {
-                        dtOra = dbHelper.GetDataTable("select RNO,ZPXLH,MZ from " + strOraTBName + " where ZPXLH=" + drInfo["zpbh"].ToString());
+                        dtOra = dbHelper.GetDataTable("select RNO,ZPXLH,MZ from " + strOraTBName + " where ZPXLH='" + drInfo["zpbh"].ToString() + "'");
                     }
                     catch (System.Exception ex)
                     {
