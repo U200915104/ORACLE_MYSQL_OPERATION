@@ -35,36 +35,39 @@ namespace ComparisonExport
         private int mQueryCount = 2000;
         private int mTotalTables = 0;
         private int mFinshTables = 0;
+        private string mSyncDate = null;
         public OracleToMySql1()
-        {
+        { 
             InitializeComponent();
+            txtAddrTo.Text = "10.24.107.163";
+            txtUserNameTo.Text = "rksj";
+            txtPasswordTo.Text = "rksj";
+            txtOraService.Text = "orcl";
 
-            txtAddrTo.Text = "10.10.181.138";
-            //txtAddrTo.Text = "10.24.107.163";
+            //txtAddrTo.Text = "10.10.181.138";
+            //txtUserNameTo.Text = "viot";
+            //txtPasswordTo.Text = "viot";
+            //txtOraService.Text = "viot";
             txtPortTo.Text = "1521";
-            //txtUserNameTo.Text = "rksj";
-            //txtPasswordTo.Text = "rksj";
-            //txtOraService.Text = "orcl";
-            txtUserNameTo.Text = "viot";
-            txtPasswordTo.Text = "viot";
-            txtOraService.Text = "viot";
-            txtOraTables.Text = "HB_RK_ZPXX,HB_RK_2,HB_RK_3,HB_RK_4,HB_RK_5,HB_RK_6,HB_RK_7,HB_RK_8";
-            txtOraDate.Text = "2017-03-21";
+            //txtOraTables.Text = "HB_RK_ZPXX,HB_RK_2,HB_RK_3,HB_RK_4,HB_RK_5,HB_RK_6,HB_RK_7,HB_RK_8";
+            txtOraTables.Text = "HB_RK_ZPXX";
+            txtOraDate.Text = "2017-09-01";
             txtFileDirecory.Text = "d:/1/";
-            // txtZJMBurl.Text = "http://10.24.107.153:8080/BatchAddFaceInfo";
-            txtZJMBurl.Text = "http://10.10.181.138:8080/FaceComparison_hebei/BatchAddFaceInfo";
+            txtZJMBurl.Text = "http://10.24.107.153:8080/BatchAddFaceInfo";
+            //txtZJMBurl.Text = "http://10.10.181.138:8080/FaceComparison_hebei/BatchAddFaceInfo";
 
             tbkConsole.Text = "";
 
             aTimer = new MyTimer();
             aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            aTimer.Interval = 10000;
+            aTimer.Interval = 1000*10;
             aTimer.Enabled = false;
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
             btnOK.IsEnabled = false;
+            mSyncDate = null;
             //mThreadCount = Convert.ToInt32(txtThreadCount.Text.Trim());
             mThread = new List<Thread>(mThreadCount);
             //mQueryCount = Convert.ToInt32(txtQueryCount.Text.Trim());
@@ -121,7 +124,7 @@ namespace ComparisonExport
             }
             else
             {
-                Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]连接web服务成功!\r\n"; }));
+                Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]连接web服务成功!请等待下一次自动同步!\r\n"; }));
             }
 
             aTimer.Enabled = true;
@@ -130,15 +133,16 @@ namespace ComparisonExport
 
         private void OnTimedEvent(object sender, EventArgs e)
         {
-            aTimer.Stop();
             if (lastDateTime.DayOfYear != DateTime.Now.DayOfYear)
+            //if (lastDateTime.Minute != DateTime.Now.Minute)
             {
+                aTimer.Stop();
                 Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]开始同步数据!\r\n"; }));
-                SynchronizeOraTable(aTimer.txtOraTables.ToString(), 1, aTimer.txtZJMBurl.ToString(), aTimer.strOraConn.ToString(), aTimer.txtFileDirecory.ToString(), aTimer.txtOraDate.ToString());
-
-
+                SynchronizeOraTable(aTimer.txtOraTables.ToString(), 1, aTimer.txtZJMBurl.ToString(), aTimer.strOraConn.ToString(), aTimer.txtFileDirecory.ToString(), mSyncDate == null ? aTimer.txtOraDate.ToString() : mSyncDate);
+                mSyncDate = DateTime.Now.ToString("yyyy-MM-dd");
             }
-
+            lastDateTime = DateTime.Now;
+            
         }
 
         private void SynchronizeOraTable(string OraTables, int ThreadCount, string ZJMBurl, string OraConn, string FileDirecory, string OraDate)
@@ -146,14 +150,17 @@ namespace ComparisonExport
             string strFile = System.IO.Path.Combine(FileDirecory, DateTime.Now.ToString("yyyy-MM-dd") + ".txt");
             int iLen = mQueryCount;
             DBHelper dbHelper = DBHelper.GetInstance("Oracle", OraConn, false);
-            int iCurIndex = 1;
-            int SynCount = 0;
-            Boolean isLastGroup = false;
+            int iCurIndex;
+            int SynCount;
+            Boolean isLastGroup;
             string[] arrTables = OraTables.Split(',');
             mTotalTables = arrTables.Length;
             mFinshTables = 0;
             foreach (string table in arrTables)
             {
+                iCurIndex = 1;
+                SynCount = 0;
+                isLastGroup = false;
                 Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]开始同步表" + table + "...\r\n"; }));
                 lock (mLock)
                 {
@@ -161,7 +168,7 @@ namespace ComparisonExport
                 }
                 try
                 {
-                    SynCount = dbHelper.GetCount(table, "tbsj>to_date('" + OraDate + "','yyyy-mm-dd') order by tbsj desc ");
+                    SynCount = dbHelper.GetCount(table, "tbsj>=to_date('" + OraDate + "','yyyy-mm-dd') order by tbsj desc ");
                 }
                 catch (System.Exception ex)
                 {
@@ -170,8 +177,30 @@ namespace ComparisonExport
                     {
                         File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][error]读取表" + table + "失败！\r\n"));
                         mFinshTables++;
+                        if (mFinshTables == mTotalTables)
+                        {
+                            Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!详情请查看日志！\r\n"; }));
+                            File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!\r\n"));
+                            aTimer.Start();
+                        }
                     }
                     
+                    continue;
+                }
+                if (SynCount <= 0)
+                {
+                    Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]表" + table + "没有要同步的记录！\r\n"; }));
+                    lock (mLock)
+                    {
+                        File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][info]表" + table + "没有要同步的记录！\r\n"));
+                        mFinshTables++;
+                        if (mFinshTables == mTotalTables)
+                        {
+                            Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!详情请查看日志！\r\n"; }));
+                            File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!\r\n"));
+                            aTimer.Start();
+                        }
+                    }
                     continue;
                 }
                 DataTable dtInfos = new DataTable();
@@ -189,6 +218,13 @@ namespace ComparisonExport
                         {
                             File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][error]读取表" + table + "失败！\r\n"));
                             mFinshTables++;
+                            if (mFinshTables == mTotalTables)
+                            {
+                                Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!详情请查看日志！\r\n"; }));
+                                File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!\r\n"));
+                                aTimer.Start();
+                                //Dispatcher.Invoke(new Action(delegate { btnOK.IsEnabled = true; }));
+                            }
                         }                      
                         break;
                     }
@@ -306,14 +342,16 @@ namespace ComparisonExport
             dtInfos = null;
             if (isLastGroup)
             {
-                Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]表" + strTable + "同步完成!\r\n"; }));
+                
                 lock (mLock)
                 {
+                    File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][info]表" + strTable + "同步完成！\r\n"));
+                    Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]表" + strTable + "同步完成!\r\n"; }));
                     mFinshTables++;
                     if (mFinshTables == mTotalTables)
                     {
-                        Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!详情请查看日志！\r\n"; }));
-                        File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!\r\n"));
+                        Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!详情请查看日志！\r\n\r\n"; }));
+                        File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!\r\n\r\n"));
                         aTimer.Start();
                         //Dispatcher.Invoke(new Action(delegate { btnOK.IsEnabled = true; }));
                     }
