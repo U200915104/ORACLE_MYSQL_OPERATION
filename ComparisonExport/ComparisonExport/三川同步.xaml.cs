@@ -49,9 +49,9 @@ namespace ComparisonExport
             //txtPasswordTo.Text = "viot";
             //txtOraService.Text = "viot";
             txtPortTo.Text = "1521";
-            //txtOraTables.Text = "HB_RK_ZPXX,HB_RK_2,HB_RK_3,HB_RK_4,HB_RK_5,HB_RK_6,HB_RK_7,HB_RK_8";
-            txtOraTables.Text = "HB_RK_ZPXX";
-            txtOraDate.Text = "2017-09-01";
+            txtOraTables.Text = "HB_RX_ZPXX,HB_RX_2,HB_RX_3,HB_RX_4,HB_RX_5,HB_RX_6,HB_RX_7,HB_RX_8";
+            //txtOraTables.Text = "HB_RK_ZPXX";
+            txtOraDate.Text = "2016-09-01";
             txtFileDirecory.Text = "d:/1/";
             txtZJMBurl.Text = "http://10.24.107.153:8080/BatchAddFaceInfo";
             //txtZJMBurl.Text = "http://10.10.181.138:8080/FaceComparison_hebei/BatchAddFaceInfo";
@@ -60,7 +60,8 @@ namespace ComparisonExport
 
             aTimer = new MyTimer();
             aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            aTimer.Interval = 1000*10;
+            aTimer.Interval = 1000 * 60 * 30;
+            //aTimer.Interval = 1000;
             aTimer.Enabled = false;
         }
 
@@ -93,7 +94,6 @@ namespace ComparisonExport
 
         private void Synchronize(object arg)
         {
-            //aTimer.Start();
             string[] arrArg = (string[])arg;
             string strOraConn = arrArg[0];
             string strOraTables = arrArg[1];
@@ -128,13 +128,12 @@ namespace ComparisonExport
             }
 
             aTimer.Enabled = true;
-            //aTimer.Start();
         }
 
         private void OnTimedEvent(object sender, EventArgs e)
         {
             if (lastDateTime.DayOfYear != DateTime.Now.DayOfYear)
-            //if (lastDateTime.Minute != DateTime.Now.Minute)
+            //    if (lastDateTime.Minute != DateTime.Now.Minute)
             {
                 aTimer.Stop();
                 Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]开始同步数据!\r\n"; }));
@@ -223,7 +222,6 @@ namespace ComparisonExport
                                 Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!详情请查看日志！\r\n"; }));
                                 File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!\r\n"));
                                 aTimer.Start();
-                                //Dispatcher.Invoke(new Action(delegate { btnOK.IsEnabled = true; }));
                             }
                         }                      
                         break;
@@ -319,8 +317,12 @@ namespace ComparisonExport
                 }
                 catch (System.Exception ex)
                 {
-                    MessageBox.Show(ex.ToString());
-                    return;
+                    lock (mLock)
+                    {
+                        File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][error]同步" + strTable + " -- RNO:" + drInfo["RNO"] + " -- ZPLXH:" + drInfo["ZPXLH"] + " -- TBSJ:" + drInfo["TBSJ"] + "失败！！！\r\n"));
+                    }
+                    //MessageBox.Show(ex.ToString());
+                    continue;
                 }
 
                 if (strRet != "0")
@@ -352,8 +354,7 @@ namespace ComparisonExport
                     {
                         Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!详情请查看日志！\r\n\r\n"; }));
                         File.AppendAllText(strFile, string.Format("[" + DateTime.Now.ToString() + "][info]本次同步完成!请等待下次同步自动执行!\r\n\r\n"));
-                        aTimer.Start();
-                        //Dispatcher.Invoke(new Action(delegate { btnOK.IsEnabled = true; }));
+                        aTimer.Start();                        
                     }
                 }
             }
@@ -391,6 +392,7 @@ namespace ComparisonExport
                 myRequest.Method = "POST";
                 myRequest.ContentType = "application/octet-stream";
                 myRequest.ContentLength = data.Length;
+                myRequest.Timeout = 20000;
                 Stream newStream = myRequest.GetRequestStream();
                 newStream.Write(data, 0, data.Length);
                 newStream.Flush();
@@ -403,7 +405,7 @@ namespace ComparisonExport
             }
             catch (System.Exception ex)
             {
-                Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][error]与web服务器通信异常!\r\n"; }));
+                Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][error]与web服务器通信异常!\r\n" + ex.ToString() + "\r\n"; }));             
                 return "-11";
             }
 
