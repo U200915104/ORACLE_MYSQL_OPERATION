@@ -36,9 +36,11 @@ namespace ComparisonExport
         private int mTotalTables = 0;
         private int mFinshTables = 0;
         private string mSyncDate = null;
+        string OraDateTime = null;
         public OracleToMySql1()
         { 
             InitializeComponent();
+
             txtAddrTo.Text = "10.24.107.163";
             txtUserNameTo.Text = "rksj";
             txtPasswordTo.Text = "rksj";
@@ -49,9 +51,9 @@ namespace ComparisonExport
             //txtPasswordTo.Text = "viot";
             //txtOraService.Text = "viot";
             txtPortTo.Text = "1521";
-            txtOraTables.Text = "HB_RX_ZPXX,HB_RX_2,HB_RX_3,HB_RX_4,HB_RX_5,HB_RX_6,HB_RX_7,HB_RX_8";
+            txtOraTables.Text = "HB_RK_ZPXX,HB_RX_2,HB_RX_3,HB_RX_4,HB_RX_5,HB_RX_6,HB_RX_7,HB_RX_8";
             //txtOraTables.Text = "HB_RK_ZPXX";
-            txtOraDate.Text = "2016-09-01";
+            txtOraDate.Text = "2017-05-23 08:38:19";
             txtFileDirecory.Text = "d:/1/";
             txtZJMBurl.Text = "http://10.24.107.153:8080/BatchAddFaceInfo";
             //txtZJMBurl.Text = "http://10.10.181.138:8080/FaceComparison_hebei/BatchAddFaceInfo";
@@ -78,17 +80,29 @@ namespace ComparisonExport
                 btnOK.IsEnabled = true;
                 return;
             }
+            DateTime dtDate = new DateTime();
+            if (DateTime.TryParse(txtOraDate.Text.ToString(), out dtDate))
+            {
+                OraDateTime = dtDate.ToString("yyyy-MM-dd HH:mm:ss");
+            }
+            else
+            {
+                tbkConsole.Text += "[" + DateTime.Now.ToString() + "][error]日期格式不正确!\r\n";
+                btnOK.IsEnabled = true;
+                return;
+            }
+
 
             string strOraConn = string.Format("Provider=OraOLEDB.Oracle.1;User ID={0};Password={1};Data Source=(DESCRIPTION = (ADDRESS_LIST= (ADDRESS = (PROTOCOL = TCP)(HOST = {2})(PORT = {3}))) (CONNECT_DATA = (SERVICE_NAME = {4})))", txtUserNameTo.Text.Trim(),
                 txtPasswordTo.Text.Trim(), txtAddrTo.Text.Trim(), txtPortTo.Text.Trim(), txtOraService.Text.Trim());
             aTimer.strOraConn = strOraConn;
-            aTimer.txtOraDate = txtOraDate.Text.Trim();
+            aTimer.txtOraDate = OraDateTime;
             aTimer.txtOraTables = txtOraTables.Text.Trim();
             aTimer.txtFileDirecory = txtFileDirecory.Text.Trim();
             aTimer.txtZJMBurl = txtZJMBurl.Text.Trim();
 
             Thread thExport = new Thread(new ParameterizedThreadStart(Synchronize));
-            thExport.Start(new string[] { strOraConn, txtOraTables.Text.Trim(), txtOraDate.Text.Trim(), txtZJMBurl.Text.Trim(), txtFileDirecory.Text.Trim() });
+            thExport.Start(new string[] { strOraConn, txtOraTables.Text.Trim(), OraDateTime, txtZJMBurl.Text.Trim(), txtFileDirecory.Text.Trim() });
 
         }
 
@@ -133,12 +147,11 @@ namespace ComparisonExport
         private void OnTimedEvent(object sender, EventArgs e)
         {
             if (lastDateTime.DayOfYear != DateTime.Now.DayOfYear)
-            //    if (lastDateTime.Minute != DateTime.Now.Minute)
             {
                 aTimer.Stop();
                 Dispatcher.Invoke(new Action(delegate { tbkConsole.Text += "[" + DateTime.Now.ToString() + "][info]开始同步数据!\r\n"; }));
                 SynchronizeOraTable(aTimer.txtOraTables.ToString(), 1, aTimer.txtZJMBurl.ToString(), aTimer.strOraConn.ToString(), aTimer.txtFileDirecory.ToString(), mSyncDate == null ? aTimer.txtOraDate.ToString() : mSyncDate);
-                mSyncDate = DateTime.Now.ToString("yyyy-MM-dd");
+                mSyncDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             }
             lastDateTime = DateTime.Now;
             
@@ -167,7 +180,7 @@ namespace ComparisonExport
                 }
                 try
                 {
-                    SynCount = dbHelper.GetCount(table, "tbsj>=to_date('" + OraDate + "','yyyy-mm-dd') order by tbsj desc ");
+                    SynCount = dbHelper.GetCount(table, "tbsj>=to_date('" + OraDate + "','yyyy-mm-dd hh24:mi:ss') order by tbsj desc ");
                 }
                 catch (System.Exception ex)
                 {
@@ -300,13 +313,13 @@ namespace ComparisonExport
             int dbid = 0;
 
             if (strTable == "HB_RK_ZPXX") dbid = 1;
-            else if (strTable == "HB_RK_2") dbid = 2;
-            else if (strTable == "HB_RK_3") dbid = 3;
-            else if (strTable == "HB_RK_4") dbid = 4;
-            else if (strTable == "HB_RK_5") dbid = 5;
-            else if (strTable == "HB_RK_6") dbid = 6;
-            else if (strTable == "HB_RK_7") dbid = 7;
-            else if (strTable == "HB_RK_8") dbid = 8;
+            else if (strTable == "HB_RX_2") dbid = 2;
+            else if (strTable == "HB_RX_3") dbid = 3;
+            else if (strTable == "HB_RX_4") dbid = 4;
+            else if (strTable == "HB_RX_5") dbid = 5;
+            else if (strTable == "HB_RX_6") dbid = 6;
+            else if (strTable == "HB_RX_7") dbid = 7;
+            else if (strTable == "HB_RX_8") dbid = 8;
             else return;
             string strRet = null;
             foreach (DataRow drInfo in dtInfos.Rows)
