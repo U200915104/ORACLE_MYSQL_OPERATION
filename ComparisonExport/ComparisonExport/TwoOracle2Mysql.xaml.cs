@@ -41,12 +41,12 @@ namespace ComparisonExport
             txtPassword.Text = "root";
             txtDBName.Text = "faceserverdb";
 
-            txtAddrTo.Text = "10.148.63.198";
+            txtAddrTo.Text = "10.**.**.**";
             txtPortTo.Text = "1521";
-            txtUserNameTo.Text = "pcs_yyk_data_jk_rxbd_test";
-            txtPasswordTo.Text = "pcs_yyk_data_jk_rxbd_test";
-            txtOraService.Text = "czrkzyk";
-            txtOraTBName.Text = "V_WBZY_BZ_ZTRYXX_DJ";
+            txtUserNameTo.Text = "**";
+            txtPasswordTo.Text = "**";
+            txtOraService.Text = "**";
+            txtOraTBName.Text = "**";
             txtBeginIndex.Text = "1";
             txtSingleTableCount.Text = "1000000";
             isPrintSuccess = false;
