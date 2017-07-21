@@ -1,7 +1,7 @@
 ﻿<Application x:Class="ComparisonExport.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="三川同步.xaml">
+             StartupUri="TwoOracle2Mysql_嫌疑人.xaml">
     <Application.Resources>
          
     </Application.Resources>

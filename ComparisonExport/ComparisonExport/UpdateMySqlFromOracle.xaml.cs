@@ -254,7 +254,7 @@ namespace ComparisonExport
                         }
                         continue;
                     }
-                    //dt1 = DateTime.Now;
+                    dt1 = DateTime.Now;
                     try
                     {
                         dtOra = dbHelper.GetDataTable("select RNO,ZPXLH,MZ from " + strOraTBName + " where ZPXLH='" + drInfo["zpbh"].ToString() + "'");
@@ -279,11 +279,11 @@ namespace ComparisonExport
                         continue;
                     }
 
-                    //dt2 = DateTime.Now;
-                    //lock (mLock)
-                    //{
-                    //    File.AppendAllText(strFile, string.Format("读取ZPXLH为{0}的Oracle记录用时{1}秒\r\n", drInfo["zpbh"].ToString(), (dt2 - dt1).TotalSeconds));
-                    //}
+                    dt2 = DateTime.Now;
+                    lock (mLock)
+                    {
+                        File.AppendAllText(strFile, string.Format("读取ZPXLH为{0}的Oracle记录用时{1}秒\r\n", drInfo["zpbh"].ToString(), (dt2 - dt1).TotalSeconds));
+                    }
                     if (dtOra == null)
                     {
                         lock (mLockPB)
@@ -301,7 +301,7 @@ namespace ComparisonExport
                         }
                         continue;
                     }
-                    //dt3 = DateTime.Now;
+                    dt3 = DateTime.Now;
                     try
                     {
                         bol = dbHelperMySql.Update(strTable, "zpbh='" + dtOra.Rows[0]["ZPXLH"] + "'", new string[] { "rybh", "facetype", "mz" }, new object[] { dtOra.Rows[0]["RNO"], 1, dtOra.Rows[0]["MZ"] });
@@ -325,11 +325,11 @@ namespace ComparisonExport
                         }
                         continue;
                     }
-                    //dt4 = DateTime.Now;
-                    //lock (mLock)
-                    //{
-                    //    File.AppendAllText(strFile, string.Format("更新zpbh为{0}的MySql记录用时{1}秒\r\n", dtOra.Rows[0]["ZPXLH"].ToString(), (dt4 - dt3).TotalSeconds));
-                    //}
+                    dt4 = DateTime.Now;
+                    lock (mLock)
+                    {
+                        File.AppendAllText(strFile, string.Format("更新zpbh为{0}的MySql记录用时{1}秒\r\n", dtOra.Rows[0]["ZPXLH"].ToString(), (dt4 - dt3).TotalSeconds));
+                    }
                     if (!bol)
                     {
                         lock (mLock)

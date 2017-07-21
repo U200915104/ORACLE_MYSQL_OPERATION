@@ -124,8 +124,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="test.xaml.cs">
       <DependentUpon>test.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TwoOracle2Mysql2.xaml.cs">
+      <DependentUpon>TwoOracle2Mysql2.xaml</DependentUpon>
     </Compile>
     <Compile Include="UpdateMySqlFromOracle.xaml.cs">
       <DependentUpon>UpdateMySqlFromOracle.xaml</DependentUpon>
@@ -134,8 +140,23 @@
       <DependentUpon>三川同步.xaml</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="TwoOracle2Mysql_systemid.xaml.cs">
+      <DependentUpon>TwoOracle2Mysql_systemid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TwoOracle2Mysql_流动人口.xaml.cs">
+      <DependentUpon>TwoOracle2Mysql_流动人口.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TwoOracle2Mysql_嫌疑人.xaml.cs">
+      <DependentUpon>TwoOracle2Mysql_嫌疑人.xaml</DependentUpon>
+    </Compile>
     <Compile Include="副本 UpdateMySqlFromOracle.xaml.cs">
       <DependentUpon>副本 UpdateMySqlFromOracle.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TwoOracle2Mysql.xaml.cs">
+      <DependentUpon>TwoOracle2Mysql.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="副本 副本 TwoOracle2Mysql.xaml.cs">
+      <DependentUpon>副本 副本 TwoOracle2Mysql.xaml</DependentUpon>
     </Compile>
     <Compile Include="副本 导出比对记录.xaml.cs">
       <DependentUpon>副本 导出比对记录.xaml</DependentUpon>
@@ -156,6 +177,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainWindow1.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -172,8 +197,8 @@
     <Compile Include="JMSB.xaml.cs">
       <DependentUpon>JMSB.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="MainWindow1.xaml.cs">
+      <DependentUpon>MainWindow1.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Page Include="MySqlToOracle.xaml">
@@ -192,6 +217,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="TwoOracle2Mysql2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UpdateMySqlFromOracle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -200,7 +229,27 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="TwoOracle2Mysql_systemid.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TwoOracle2Mysql_流动人口.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TwoOracle2Mysql_嫌疑人.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="副本 UpdateMySqlFromOracle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TwoOracle2Mysql.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="副本 副本 TwoOracle2Mysql.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
