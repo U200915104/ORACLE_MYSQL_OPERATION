@@ -35,11 +35,11 @@ namespace ComparisonExport
         {
             InitializeComponent();
 
-            txtAddr.Text = "10.148.26.169";
+            txtAddr.Text = "10.**.**.**";
             txtPort.Text = "3306";
             txtUserName.Text = "root";
             txtPassword.Text = "root";
-            txtDBName.Text = "faceserverdb";
+            txtDBName.Text = "**";
 
             txtAddrTo.Text = "10.**.**.**";
             txtPortTo.Text = "1521";
