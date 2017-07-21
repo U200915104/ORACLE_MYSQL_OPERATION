@@ -35,26 +35,26 @@ namespace ComparisonExport
         {
             InitializeComponent();
 
-            txtAddr.Text = "10.148.26.169";
+            txtAddr.Text = "**.**.**.**";
             txtPort.Text = "3306";
             txtUserName.Text = "root";
             txtPassword.Text = "root";
-            txtDBName.Text = "faceserverdb";
+            txtDBName.Text = "***";
 
-            //txtAddrTo.Text = "10.10.181.138";
+            //txtAddrTo.Text = "**.**.**.**";
             //txtPortTo.Text = "1521";
             //txtUserNameTo.Text = "viot";
             //txtPasswordTo.Text = "viot";
             //txtOraService.Text = "viot";
 
-            txtAddrTo.Text = "10.148.63.198";
+            txtAddrTo.Text = "10.**.**.**";
             txtPortTo.Text = "1521";
-            txtUserNameTo.Text = "pcs_yyk_data_jk_rxbd_test";
-            txtPasswordTo.Text = "pcs_yyk_data_jk_rxbd_test";
-            txtOraService.Text = "czrkzyk";
+            txtUserNameTo.Text = "**";
+            txtPasswordTo.Text = "**";
+            txtOraService.Text = "**";
 
-            txtOraTBName.Text = "v_wbzy_bz_czrk";
-            txtBeginIndex.Text = "450000000000187686434";
+            txtOraTBName.Text = "**";
+            txtBeginIndex.Text = "**";
             txtSingleTableCount.Text = "1000000";
             isPrintSuccess = false;
             txtFileName.Text = "d:\\logfile.txt";
