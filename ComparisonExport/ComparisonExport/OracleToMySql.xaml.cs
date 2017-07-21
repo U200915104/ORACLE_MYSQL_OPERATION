@@ -33,17 +33,17 @@ namespace ComparisonExport
         {
             InitializeComponent();
 
-            txtAddr.Text = "10.2.64.15";
+            txtAddr.Text = "**.**.**.**";
             txtPort.Text = "3306";
             txtUserName.Text = "root";
             txtPassword.Text = "root";
             txtDBName.Text = "facecomparisondb";
 
-            txtAddrTo.Text = "10.2.64.247";
+            txtAddrTo.Text = "**.**.**.**";
             txtPortTo.Text = "1521";
-            txtUserNameTo.Text = "tckts";
-            txtPasswordTo.Text = "tckts";
-            txtOraService.Text = "rxbd2";
+            txtUserNameTo.Text = "**";
+            txtPasswordTo.Text = "**";
+            txtOraService.Text = "**";
             txtFileName.Text = "d:\\logfile.txt";
         }
 

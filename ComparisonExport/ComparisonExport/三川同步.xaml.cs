@@ -41,10 +41,10 @@ namespace ComparisonExport
         { 
             InitializeComponent();
 
-            txtAddrTo.Text = "10.24.107.163";
-            txtUserNameTo.Text = "rksj";
-            txtPasswordTo.Text = "rksj";
-            txtOraService.Text = "orcl";
+            txtAddrTo.Text = "**.**.**.**";
+            txtUserNameTo.Text = "***";
+            txtPasswordTo.Text = "***";
+            txtOraService.Text = "***";
 
             //txtAddrTo.Text = "10.10.181.138";
             //txtUserNameTo.Text = "viot";
